@@ -34,7 +34,9 @@ project(tritoncore LANGUAGES C CXX)
 option(TRITON_CORE_HEADERS_ONLY "Build only headers and stub" ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # does not produce the json file
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "") # works
-
+set(_ASAN_FLAGS "-fno-omit-frame-pointer -g3 -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${_ASAN_FLAGS}")
+set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} ${_ASAN_FLAGS}")
 include_directories(${Protobuf_INCLUDE_DIRS})
 
 
