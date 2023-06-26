@@ -27,6 +27,7 @@
 #include "rate_limiter.h"
 
 #include <limits>
+#include <mutex>
 #include "triton/common/logging.h"
 
 namespace triton { namespace core {
@@ -245,6 +246,7 @@ RateLimiter::DequeuePayload(
   std::vector<std::shared_ptr<Payload>> merged_payloads;
   size_t instance_index = std::numeric_limits<std::size_t>::max();
   {
+    DumpModelContexts();
     std::unique_lock<std::mutex> lk(payload_queue->mu_);
     payload_queue->cv_.wait(lk, [&instances, &instance_index, payload_queue]() {
       bool empty = payload_queue->queue_->Empty();
@@ -312,6 +314,15 @@ RateLimiter::GetPayload(
 
   payload->Reset(op_type, instance);
   return payload;
+}
+
+void 
+RateLimiter::DumpModelContexts() {
+  for (const auto &context : model_contexts_) {
+    auto model = context.first;
+    auto modelContexts = context.second;
+    LOG_INFO << "model name is: " << model.Name() << "model version is: " << model.version_ << "model dir is: " << model.model_dir_ << std::endl;
+  }
 }
 
 void
@@ -402,7 +413,7 @@ RateLimiter::DeferPayloadSchedule(
 {
   std::lock_guard<std::mutex> lk(model_ctx_mtx_);
 
-  auto itr = model_contexts_.find(model);
+  auto itr = model_contexts_.find(model); //which one would server the requests
   if (itr == model_contexts_.end()) {
     return Status(
         Status::Code::INTERNAL,

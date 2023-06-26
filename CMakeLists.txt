@@ -32,6 +32,10 @@ project(tritoncore LANGUAGES C CXX)
 # default only the headers and library stub is built. Set
 # TRITON_CORE_HEADERS_ONLY=OFF to also build libtritonserver.so.
 option(TRITON_CORE_HEADERS_ONLY "Build only headers and stub" ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # does not produce the json file
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "") # works
+
+include_directories(${Protobuf_INCLUDE_DIRS})
 
 
 #
@@ -57,7 +61,7 @@ target_include_directories(
 #
 add_library(
   triton-core-backendapi INTERFACE
-)
+        src/rate_limiter.cc)
 
 add_library(
   TritonCore::triton-core-backendapi ALIAS triton-core-backendapi

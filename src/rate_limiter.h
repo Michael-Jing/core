@@ -302,6 +302,8 @@ class RateLimiter {
       TritonModelInstance* tmi, PayloadQueue* payload_queue,
       const std::shared_ptr<Payload>& payload);
 
+  void DumpModelContexts();
+
   bool ignore_resources_and_priority_;
 
   // Instance context for the models
