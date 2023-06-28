@@ -1,0 +1,37 @@
+{
+    "env": {
+      "myDefaultIncludePath": ["${workspaceFolder}", "${workspaceFolder}/include"]
+    },
+    "configurations": [
+      {
+        "name": "Mac",
+        "intelliSenseMode": "clang-x64",
+        "includePath": ["${myDefaultIncludePath}", 
+          "/home/mi/Documents/code/triton/common/include",
+             "/home/mi/Documents/code/triton/server/include",
+            "/home/mi/Documents/code/triton/backend/include",
+            "/home/mi/Documents/code/triton/core/include",
+            "/home/mi/Documents/code/triton/protobuf/src"
+      ],
+        "defines": ["FOO", "BAR=100"],
+        "forcedInclude": [],
+        "compilerPath": "/usr/bin/clang",
+        "cStandard": "c11",
+        "cppStandard": "c++17",
+        "browse": {
+          "path": ["${workspaceFolder}",
+          "/home/mi/Documents/code/triton/common/include",
+             "/home/mi/Documents/code/triton/server/include",
+            "/home/mi/Documents/code/triton/backend/include",
+            "/home/mi/Documents/code/triton/core/include",
+            "/home/mi/Documents/code/triton/protobuf/src"
+        
+        ],
+          "limitSymbolsToIncludedHeaders": true,
+          "databaseFilename": ""
+        }
+      }
+    ],
+    "version": 4
+  }
+  

@@ -29,8 +29,33 @@ cmake_minimum_required(VERSION 3.18)
 project(libtritonserver LANGUAGES C CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE Debug)
 endif()
+
+
+set(_ASAN_FLAGS "-fno-omit-frame-pointer -g3 -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${_ASAN_FLAGS}")
+set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} ${_ASAN_FLAGS}")
+include_directories(${Protobuf_INCLUDE_DIRS})
+
+
+#
+# Triton Server API
+#
+add_library(
+  triton-core-serverapi INTERFACE
+)
+
+add_library(
+  TritonCore::triton-core-serverapi ALIAS triton-core-serverapi
+)
+
+target_include_directories(
+  triton-core-serverapi
+  INTERFACE
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
 #
 # Dependencies

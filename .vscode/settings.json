@@ -1,0 +1,17 @@
+{
+  
+    
+    "clangd.fallbackFlags": [
+            "-I${workspaceFolder}/**",
+            "-I/home/mi/Documents/code/triton/common/include",
+            "-I/home/mi/Documents/code/triton/core/include",
+            "-I/home/mi/Documents/code/triton/server/include",
+            "-I/home/mi/Documents/code/triton/backend/include",
+            "-I/home/mi/Documents/code/triton/core/include",
+            "-I/home/mi/Documents/code/triton/protobuf/src",
+            "-std=c++17",
+            "-I/home/mi/Documents/code/triton/common/protobuf"
+        ]
+
+   
+}
