@@ -321,7 +321,7 @@ RateLimiter::DumpModelContexts() {
   for (const auto &context : model_contexts_) {
     auto model = context.first;
     auto modelContexts = context.second;
-    LOG_INFO << "model name is: " << model.Name() << "model version is: " << model.version_ << "model dir is: " << model.model_dir_ << std::endl;
+    LOG_INFO << "model name is: " << model->Name() << "model version is: " << model->version_ << "model dir is: " << model->model_dir_ << std::endl;
   }
 }
 

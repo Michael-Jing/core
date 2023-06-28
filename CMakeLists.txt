@@ -31,7 +31,7 @@ project(tritoncore LANGUAGES C CXX)
 # Control building of shared library vs. only headers and stub. By
 # default only the headers and library stub is built. Set
 # TRITON_CORE_HEADERS_ONLY=OFF to also build libtritonserver.so.
-option(TRITON_CORE_HEADERS_ONLY "Build only headers and stub" ON)
+option(TRITON_CORE_HEADERS_ONLY "Build only headers and stub" OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # does not produce the json file
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "") # works
 set(_ASAN_FLAGS "-fno-omit-frame-pointer -g3 -O0")
@@ -164,7 +164,7 @@ if(NOT TRITON_CORE_HEADERS_ONLY)
   option(TRITON_ENABLE_STATS "Include statistics collections in server" ON)
   option(TRITON_ENABLE_TRACING "Include tracing support in server" OFF)
   option(TRITON_ENABLE_NVTX "Include NVTX support in server" OFF)
-  option(TRITON_ENABLE_GPU "Enable GPU support in server" ON)
+  option(TRITON_ENABLE_GPU "Enable GPU support in server" OFF)
   option(TRITON_ENABLE_MALI_GPU "Enable Arm Mali GPU support in server" OFF)
   set(TRITON_MIN_COMPUTE_CAPABILITY "6.0" CACHE STRING
       "The minimum CUDA compute capability supported by Triton" )
@@ -175,7 +175,7 @@ if(NOT TRITON_CORE_HEADERS_ONLY)
 
   # Metrics
   option(TRITON_ENABLE_METRICS "Include metrics support in server" ON)
-  option(TRITON_ENABLE_METRICS_GPU "Include GPU metrics support in server" ON)
+  option(TRITON_ENABLE_METRICS_GPU "Include GPU metrics support in server" OFF)
   option(TRITON_ENABLE_METRICS_CPU "Include CPU metrics support in server" ON)
 
   # Cloud storage
@@ -214,7 +214,7 @@ if(NOT TRITON_CORE_HEADERS_ONLY)
   include(FetchContent)
   FetchContent_Declare(
     repo-third-party
-    GIT_REPOSITORY https://github.com/triton-inference-server/third_party.git
+    GIT_REPOSITORY https://github.com/Michael-Jing/third_party.git
     GIT_TAG ${TRITON_THIRD_PARTY_REPO_TAG}
   )
   FetchContent_MakeAvailable(repo-third-party)
