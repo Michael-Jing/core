@@ -320,7 +320,6 @@ void
 RateLimiter::DumpModelContexts() {
   for (const auto &context : model_contexts_) {
     auto model = context.first;
-    auto modelContexts = context.second;
     LOG_INFO << "model name is: " << model->Name() << "model version is: " << model->Version() << "model dir is: " << model->LocalizedModelPath() << std::endl;
   }
 }
