@@ -318,10 +318,14 @@ RateLimiter::GetPayload(
 
 void 
 RateLimiter::DumpModelContexts() {
+  LOG_INFO << "model contexts dump begin\n";
+  int i = 0;
   for (const auto &context : model_contexts_) {
     auto model = context.first;
-    LOG_INFO << "model name is: " << model->Name() << "model version is: " << model->Version() << "model dir is: " << model->LocalizedModelPath() << std::endl;
+    LOG_INFO << "map entry " << i << " model name is: " << model->Name() << " model version is: " << model->Version() << " model dir is: " << model->LocalizedModelPath() << std::endl;
+    i += 1;
   }
+  LOG_INFO << "model contexts dump done" << std::endl;
 }
 
 void
