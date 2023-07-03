@@ -3035,6 +3035,11 @@ TRITONSERVER_ServerInferAsync(
   // must release it from unique_ptr since the caller should retain
   // ownership when there is error. If there is not an error then ureq
   // == nullptr and so this release is a nop.
+  if (ureq == nullptr) {
+    std::cout << "request should be released by OnRelease callback" << std::endl;
+  } else {
+    std::cout << "request should be released by caller" << std::endl;
+  }
   ureq.release();
 
   RETURN_IF_STATUS_ERROR(status);

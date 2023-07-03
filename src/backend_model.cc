@@ -611,7 +611,7 @@ TritonModel::TritonModel(
 {
 }
 
-TritonModel::~TritonModel()
+TritonModel::~TritonModel() // TritonModel Finalizer calls ModelInstanceFinalizer
 {
   // If there is a custom batcher, finalize it.
   if (batcher_fini_fn_) {

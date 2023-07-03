@@ -647,6 +647,7 @@ ModelRepositoryManager::LoadUnloadModel(
 
   bool polled = true;
   bool no_parallel_conflict = true;
+  // if there's a parallel conflict, then retry the operation
   do {
     // Function will block during a conflict, so safe to retry immediately.
     RETURN_IF_ERROR(LoadUnloadModels(
@@ -654,9 +655,20 @@ ModelRepositoryManager::LoadUnloadModel(
   } while (!no_parallel_conflict);
   // Check if model is loaded / unloaded properly
   if (!polled) {
+    // maybe this is not necessary, because in the unloading case, there's no poll action
+    if (type == ActionType::LOAD) {
     return Status(
         Status::Code::INTERNAL, "failed to load '" + model_name +
                                     "', failed to poll from model repository");
+    } else if (type == ActionType::UNLOAD) {
+      return Status(
+          Status::Code::INTERNAL, "failed to unload '" + model_name +
+                                      "', failed to poll from model repository");
+    } else {
+      return Status(
+          Status::Code::INTERNAL, "failed to perform no_action on model '" + model_name +
+                                      "', failed to poll from model repository");
+    }
   }
 
   // Use global map to retrieve the set of models being updated with the given
@@ -736,7 +748,7 @@ ModelRepositoryManager::LoadUnloadModels(
       for (const auto& model : models) {
         // Within the class, model is referred by ModelIdentifier, so it needs
         // to check global map to find identifier assoicated with the name.
-        auto git = global_map_.find(model.first);
+        auto git = global_map_.find(model.first); // can the model name confuse the global_map
         if (git != global_map_.end()) {
           for (const auto& mid : git->second) {
             deleted.insert(mid);

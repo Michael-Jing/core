@@ -159,6 +159,7 @@ struct ModelDeleter {
     // here.
     std::function<void()> destroy_fn = OnDestroyModel_;
     std::thread dthd([model, destroy_fn]() {
+      LOG_INFO << "deleting model called, name: '" << model->Name() << "' version: '" << model->Version() << std::endl;
       delete model;
       destroy_fn();
     });
@@ -399,7 +400,7 @@ ModelLifeCycle::AsyncUnload(const ModelIdentifier& model_id)
     model_info->last_update_ns_ = now_ns;
     // Unload serving model, for model that is in LOADING state,
     // the updated timestamp will be recognized that there is newer update
-    // on the model info and the load should be aborted
+    // on the model info and the load should be aborted, another possible source of the current failed to unloading issue
     if (model_info->state_ == ModelReadyState::READY) {
       if (model_info->agent_model_list_ != nullptr) {
         // Only log the error because the model should be unloaded regardless
