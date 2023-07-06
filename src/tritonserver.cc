@@ -2998,6 +2998,8 @@ TRITONSERVER_ServerInferAsync(
       reinterpret_cast<tc::InferenceRequest*>(inference_request);
 
   RETURN_IF_STATUS_ERROR(lrequest->PrepareForInference());
+  std::cout << "request prepared" << std::endl;
+
 
   // Set the trace object in the request so that activity associated
   // with the request can be recorded as the request flows through
