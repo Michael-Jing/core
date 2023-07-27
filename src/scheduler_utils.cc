@@ -136,7 +136,8 @@ PriorityQueue::PolicyQueue::Enqueue(std::unique_ptr<InferenceRequest>& request)
         request->LogRequest() + "Exceeds maximum queue size");
   }
 
-  queue_.emplace_back(std::move(request));
+  queue_.emplace_back(std::move(
+      request));  // ploicy has queue_, delayed_queue_, rejected_queue_
   auto timeout_us = default_timeout_us_;
   if (allow_timeout_override_) {
     auto override_timeout_us = queue_.back()->TimeoutMicroseconds();
@@ -172,6 +173,7 @@ PriorityQueue::PolicyQueue::Dequeue(std::unique_ptr<InferenceRequest>* request)
   return Status::Success;
 }
 
+// returns true if idx points to an request in queue_ or delayed queue
 bool
 PriorityQueue::PolicyQueue::ApplyPolicy(
     size_t idx, size_t* rejected_count, size_t* rejected_batch_size)
@@ -184,7 +186,10 @@ PriorityQueue::PolicyQueue::ApplyPolicy(
     size_t curr_idx = idx;
     while (curr_idx < queue_.size()) {
       if ((timeout_timestamp_ns_[curr_idx] != 0) &&
-          (now_nanoseconds > timeout_timestamp_ns_[curr_idx])) {
+          (now_nanoseconds >
+           timeout_timestamp_ns_[curr_idx])) {  // process all requests that
+                                                // timedout, moved to delayed
+                                                // queue or rejected
         if (timeout_action_ == inference::ModelQueuePolicy::DELAY) {
           delayed_queue_.emplace_back(std::move(queue_[curr_idx]));
         } else {
@@ -314,7 +319,8 @@ Status
 PriorityQueue::Dequeue(std::unique_ptr<InferenceRequest>* request)
 {
   pending_cursor_.valid_ = false;
-  auto it_start = queues_.lower_bound(front_priority_level_);
+  auto it_start = queues_.lower_bound(front_priority_level_); // lower_bound returns an iterator pointing to the key in the map container which is equivalent to front_priority_level_, 
+    // in case k is not present in the map container, the function returns an iterator pointing to the immediate next element which is just greater than k.
   for (auto it = it_start; it != queues_.end(); ++it) {
     if (!it->second.Empty()) {
       front_priority_level_ = it->first;
@@ -345,7 +351,7 @@ PriorityQueue::ReleaseRejectedRequests(
       // Invalidate the pending batch cursor if it points to
       // the item to be erased
       if (pending_cursor_.valid_ &&
-          it->first == pending_cursor_.curr_it_->first) {
+          it->first == pending_cursor_.curr_it_->first) { // it->first is priority level
         pending_cursor_.valid_ = false;
       }
       it = queues_.erase(it);  // returns iterator following removed element
@@ -357,6 +363,7 @@ PriorityQueue::ReleaseRejectedRequests(
   requests->swap(res);
 }
 
+// Pending cursor is marked as valid and new pending request has timed out
 bool
 PriorityQueue::IsCursorValid()
 {
@@ -385,7 +392,7 @@ PriorityQueue::ApplyPolicyAtCursor()
     if (!(pending_cursor_.curr_it_->second.ApplyPolicy(
             pending_cursor_.queue_idx_, &rejected_count,
             &rejected_batch_size))) {
-      if (size_ > pending_cursor_.pending_batch_count_ + rejected_count) {
+      if (size_ > pending_cursor_.pending_batch_count_ + rejected_count) { // there's more queues
         pending_cursor_.curr_it_++;
         pending_cursor_.queue_idx_ = 0;
         continue;
@@ -409,7 +416,7 @@ PriorityQueue::AdvanceCursor()
   const auto& timeout_ns =
       pending_cursor_.curr_it_->second.TimeoutAt(pending_cursor_.queue_idx_);
   if (timeout_ns != 0) {
-    if (pending_cursor_.pending_batch_closest_timeout_ns_ != 0) {
+    if (pending_cursor_.pending_batch_closest_timeout_ns_ != 0) { // what is the special behavior when pending_batch_closest_timeout_ns_ is zero
       pending_cursor_.pending_batch_closest_timeout_ns_ = std::min(
           pending_cursor_.pending_batch_closest_timeout_ns_, timeout_ns);
     } else {

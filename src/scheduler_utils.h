@@ -27,6 +27,7 @@
 
 #include <deque>
 #include <unordered_map>
+
 #include "scheduler.h"
 
 namespace triton { namespace core {
@@ -257,7 +258,7 @@ class PriorityQueue {
   uint32_t front_priority_level_;
   inference::ModelQueuePolicy default_policy_;
 
-  Cursor pending_cursor_;
+  Cursor pending_cursor_;  // what is pending_cursor_ used for
   Cursor current_mark_;
 };
 

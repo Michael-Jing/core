@@ -149,6 +149,24 @@ class Metrics {
     return GetSingleton()->inf_success_family_;
   }
 
+  // Metric family tracing request prepared
+  static prometheus::Family<prometheus::Counter>& FamilyRequestPrepared()
+  {
+    return GetSingleton()->inf_request_trace_prepared_family_;
+  }
+
+  // Metric family tracing request should release
+  static prometheus::Family<prometheus::Counter>& FamilyRequestShouldRelease()
+  {
+    return GetSingleton()->inf_request_trace_should_release_family_;
+  }
+
+  // Metric family tracing request should delete
+  static prometheus::Family<prometheus::Counter>& FamilyRequestShouldDelete()
+  {
+    return GetSingleton()->inf_request_trace_should_delete_family_;
+  }
+
   // Metric family counting failed inference requests
   static prometheus::Family<prometheus::Counter>& FamilyInferenceFailure()
   {
@@ -278,6 +296,9 @@ class Metrics {
   prometheus::Family<prometheus::Counter>& inf_count_exec_family_;
   prometheus::Family<prometheus::Counter>& inf_request_duration_us_family_;
   prometheus::Family<prometheus::Counter>& inf_queue_duration_us_family_;
+  prometheus::Family<prometheus::Counter>& inf_request_trace_prepared_family_;
+  prometheus::Family<prometheus::Counter>& inf_request_trace_should_release_family_;
+  prometheus::Family<prometheus::Counter>& inf_request_trace_should_delete_family_;
   prometheus::Family<prometheus::Counter>&
       inf_compute_input_duration_us_family_;
   prometheus::Family<prometheus::Counter>&

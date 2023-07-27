@@ -49,6 +49,7 @@
 #include "triton/common/table_printer.h"
 #include "triton/common/triton_json.h"
 #include "tritonserver_apis.h"
+#include "metrics.h"
 
 // For unknown reason, windows will not export some functions declared
 // with dllexport in tritonrepoagent.h and tritonbackend.h. To get
@@ -2998,8 +2999,10 @@ TRITONSERVER_ServerInferAsync(
       reinterpret_cast<tc::InferenceRequest*>(inference_request);
 
   RETURN_IF_STATUS_ERROR(lrequest->PrepareForInference());
-  std::cout << "request prepared" << std::endl;
-
+  auto prepared = Metrics::FamilyRequestPrepared();
+  auto shouldRelease = Metrics::FamilyRequestShouldRelease();
+  auto shouldDelete = Metrics::FamilyRequestShouldDelete();
+  prepared.Increament(1);
 
   // Set the trace object in the request so that activity associated
   // with the request can be recorded as the request flows through
@@ -3038,9 +3041,9 @@ TRITONSERVER_ServerInferAsync(
   // ownership when there is error. If there is not an error then ureq
   // == nullptr and so this release is a nop.
   if (ureq == nullptr) {
-    std::cout << "request should be released by OnRelease callback" << std::endl;
+    shouldRelease.Increament(1);
   } else {
-    std::cout << "request should be released by caller" << std::endl;
+    shouldDelete.Increament(1);
   }
   ureq.release();
 

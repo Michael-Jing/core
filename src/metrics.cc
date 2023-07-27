@@ -52,6 +52,23 @@ Metrics::Metrics()
               .Name("nv_inference_request_success")
               .Help("Number of successful inference requests, all batch sizes")
               .Register(*registry_)),
+      inf_request_trace_prepared_family_(
+        prometheus::BuildCounter()
+              .Name("nv_inference_request_prepared")
+              .Help("Number of inference requests prepared")
+              .Register(*registry_)),
+      inf_request_trace_should_release_family_(
+        prometheus::BuildCounter()
+              .Name("nv_inference_request_should_release")
+              .Help("Number of inference requests should be released")
+              .Register(*registry_)
+      ),
+      inf_request_trace_should_delete_family_(
+        prometheus::BuildCounter()
+              .Name("nv_inference_request_should_delete")
+              .Help("Number of inference requests should be deleted")
+              .Register(*registry_)
+      ),
       inf_failure_family_(
           prometheus::BuildCounter()
               .Name("nv_inference_request_failure")

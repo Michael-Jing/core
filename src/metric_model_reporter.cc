@@ -184,6 +184,9 @@ MetricModelReporter::InitializeCounters(
   counter_families_["inf_count"] = &Metrics::FamilyInferenceCount();
   counter_families_["inf_exec_count"] =
       &Metrics::FamilyInferenceExecutionCount();
+  counter_families_["inf_request_prepared"] = &Metrics::FamilyRequestPrepared();
+  counter_families_["inf_request_should_release"] = &Metrics::FamilyRequestShouldRelease();
+  counter_families_["inf_request_should_delete"] = &Metrics::FamilyRequestShouldDelete();
 
   // Latency metrics will be initialized based on config
   if (config_.latency_counters_enabled_) {

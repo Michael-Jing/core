@@ -162,7 +162,7 @@ if(NOT TRITON_CORE_HEADERS_ONLY)
 
   option(TRITON_ENABLE_LOGGING "Include logging support in server" ON)
   option(TRITON_ENABLE_STATS "Include statistics collections in server" ON)
-  option(TRITON_ENABLE_TRACING "Include tracing support in server" OFF)
+  option(TRITON_ENABLE_TRACING "Include tracing support in server" ON)
   option(TRITON_ENABLE_NVTX "Include NVTX support in server" OFF)
   option(TRITON_ENABLE_GPU "Enable GPU support in server" OFF)
   option(TRITON_ENABLE_MALI_GPU "Enable Arm Mali GPU support in server" OFF)

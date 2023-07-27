@@ -463,7 +463,7 @@ DynamicBatchScheduler::GetDynamicBatch()
     }
   }
   size_t best_preferred_batch_size = 0;
-  queued_batch_size_ -= queue_.ApplyPolicyAtCursor();
+  queued_batch_size_ -= queue_.ApplyPolicyAtCursor(); // returns the total batch size of newly rejected requests
 
   // When there is optional input or input shape must be enforced,
   // the inputs in the requests must be examined for forming a batch
@@ -535,7 +535,7 @@ DynamicBatchScheduler::GetDynamicBatch()
       best_preferred_batch_size = pending_batch_size_;
       queue_.MarkCursor();
     }
-  }
+  } // end while
 
   // Obtain the age of the oldest pending request to compare with the maximum
   // batch queuing delay
@@ -544,7 +544,7 @@ DynamicBatchScheduler::GetDynamicBatch()
                         .count();
   uint64_t delay_ns = now_ns - queue_.OldestEnqueueTime();
   bool delay_is_exceeded =
-      (pending_batch_delay_ns_ != 0) && (delay_ns >= pending_batch_delay_ns_);
+      (pending_batch_delay_ns_ != 0) && (delay_ns >= pending_batch_delay_ns_); // pending_batch_delay_ns_ has exceeded
 
   // If we found a preferred batch size and the queue delay hasn't
   // been exceeded, then execute that.
@@ -571,7 +571,7 @@ DynamicBatchScheduler::GetDynamicBatch()
     return 0;
   }
 
-  if (delay_is_exceeded || (pending_batch_delay_ns_ == 0)) {
+  if (delay_is_exceeded || (pending_batch_delay_ns_ == 0)) { // pending_batch_delay_ns_ == 0 means no delay is allowed
     return 0;
   }
 
@@ -579,7 +579,7 @@ DynamicBatchScheduler::GetDynamicBatch()
   auto next_preferred_batch_size_it = preferred_batch_sizes_.upper_bound(
       pending_batch_size_ + payload_batch_size);
   if (next_preferred_batch_size_it != preferred_batch_sizes_.end()) {
-    next_preferred_batch_size_ = *next_preferred_batch_size_it;
+    next_preferred_batch_size_ = *next_preferred_batch_size_it; // the smallest preferred_batch_size that is larger than pending_batch_size_ + payload_batch_size
   } else {
     next_preferred_batch_size_ =
         preferred_batch_sizes_.empty() ? 0 : *preferred_batch_sizes_.begin();
@@ -593,13 +593,13 @@ DynamicBatchScheduler::GetDynamicBatch()
   // not yet in preferred batch size, we should move the pending batch over to
   // ensure the model instance will pick up largest available batch even if it
   // is not the preferred batch.
-  if (!payload_saturated_ && (payload_batch_size != 0) &&
-      (preferred_batch_sizes_.find(payload_batch_size) ==
-       preferred_batch_sizes_.end())) {
-    return 0;
+  if (!payload_saturated_ && (payload_batch_size != 0) && // a payload not empty and not full => can be grown 
+      (preferred_batch_sizes_.find(payload_batch_size) == 
+       preferred_batch_sizes_.end())) {  // not in preferred batch size
+    return 0; // no delay, the effect of returning 0
   }
 
-  uint64_t wait_ns = pending_batch_delay_ns_ - delay_ns;
+  uint64_t wait_ns = pending_batch_delay_ns_ - delay_ns; // what is pending_batch_delay_ns_ and delay_ns_
   // Note that taking request timeout into consideration allows us to reset
   // pending batch as soon as it is invalidated. But the cost is that in edge
   // case where the timeout will be expired one by one, the thread will be
