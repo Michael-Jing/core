@@ -731,7 +731,7 @@ TritonModelInstance::TritonBackendThread::CreateBackendThread(
   std::unique_ptr<TritonBackendThread> runner(raw_triton_backend_thread);
 
   runner->AddModelInstance(model_instance);
-  runner->backend_thread_ = std::thread([raw_triton_backend_thread]() {
+  runner->backend_thread_ = std::thread([raw_triton_backend_thread]() { // here the backend thread actually got something that it can run
     raw_triton_backend_thread->BackendThread();
   });
 
@@ -813,10 +813,10 @@ TritonModelInstance::TritonBackendThread::BackendThread()
   while (!should_exit) {
     std::shared_ptr<Payload> payload;
     model_->Server()->GetRateLimiter()->DequeuePayload(
-        model_instances_, &payload);
+        model_instances_, &payload); // instances is moved to payload and got deleted from model_instances_
     NVTX_RANGE(nvtx_, "BackendThread " + name_);
     payload->Execute(&should_exit);
-    model_instances_.push_back(payload->GetInstance());
+    model_instances_.push_back(payload->GetInstance()); // why here a push is needed
     // Release the payload to the RateLimiter
     model_->Server()->GetRateLimiter()->PayloadRelease(payload);
   }

@@ -49,7 +49,7 @@ class InferenceRequest;
 //
 class TritonModelInstance {
  public:
-  struct SecondaryDevice {
+  struct SecondaryDevice { // what is SecondaryDevice used for
     SecondaryDevice(const std::string kind, const int64_t id)
         : kind_(kind), id_(id)
     {
@@ -132,7 +132,7 @@ class TritonModelInstance {
         const std::string name, TritonModelInstance* model, const int nice,
         const int32_t device_id,
         std::unique_ptr<TritonBackendThread>* triton_backend_thread);
-    void AddModelInstance(TritonModelInstance* model_instance);
+    void AddModelInstance(TritonModelInstance* model_instance); // one thread can run multiple instances?
     Status InitAndWarmUpModelInstance(TritonModelInstance* model_instance);
     void StopBackendThread();
     ~TritonBackendThread();
@@ -148,7 +148,7 @@ class TritonModelInstance {
     const int32_t device_id_;
 
     TritonModel* model_;
-    std::deque<TritonModelInstance*> model_instances_;
+    std::deque<TritonModelInstance*> model_instances_; // Yes, one thread can run multiple instances
 
     std::thread backend_thread_;
     std::atomic<bool> backend_thread_exit_;

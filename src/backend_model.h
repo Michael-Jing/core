@@ -183,8 +183,8 @@ class TritonModel : public Model {
 
   // The model instances for this model. Passive instances are loaded but not
   // added to the scheduler.
-  std::vector<std::shared_ptr<TritonModelInstance>> instances_;
-  std::vector<std::shared_ptr<TritonModelInstance>> passive_instances_;
+  std::vector<std::shared_ptr<TritonModelInstance>> instances_; // questions 1. how dose an instances moves between fg and bg, between passive and non passive
+  std::vector<std::shared_ptr<TritonModelInstance>> passive_instances_; // passvie instances do not have a thread
   // They are the background 'instances_' and 'passive_instances_', not yet
   // effective until committed.
   std::vector<std::shared_ptr<TritonModelInstance>> bg_instances_;

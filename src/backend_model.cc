@@ -387,7 +387,7 @@ Status
 TritonModel::RegisterInstance(
     std::shared_ptr<TritonModelInstance>&& instance, const bool passive)
 {
-  instance->GetSignature().DisableMatching();
+  instance->GetSignature().DisableMatching(); // matching is disabled when in bg
 
   if (passive) {
     bg_passive_instances_.emplace_back(std::move(instance));
@@ -421,7 +421,7 @@ TritonModel::GetInstancesByDevice(int32_t device_id) const
   std::vector<std::shared_ptr<TritonModelInstance>> result;
   // Do not match passive instances, as they do not have a backend thread.
   // Do not match foreground instances, as backend threads cannot be updated.
-  for (auto& instance : bg_instances_) {
+  for (auto& instance : bg_instances_) { // why only search in bg?
     if (instance->DeviceId() == device_id) {
       result.push_back(instance);
     }
@@ -494,7 +494,7 @@ TritonModel::SetConfiguredScheduler()
   std::unordered_map<std::string, bool> enforce_equal_shape_tensors;
   for (const auto& input : config_.input()) {
     if (input.is_shape_tensor()) {
-      enforce_equal_shape_tensors.insert({input.name(), true});
+      enforce_equal_shape_tensors.insert({input.name(), true}); // true means also check content
     } else if (
         !input.allow_ragged_batch() &&
         (triton::common::GetElementCount(input) == -1)) {

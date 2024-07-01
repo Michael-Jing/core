@@ -360,6 +360,8 @@ RateLimiter::PayloadRelease(std::shared_ptr<Payload>& payload)
     }
   }
 }
+// 一个request在triton中是如何流转的?
+// 一个model在triton中是如何运行的？
 
 RateLimiter::RateLimiter(
     const bool ignore_resources_and_priority, const ResourceMap& resource_map)

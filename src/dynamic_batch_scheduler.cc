@@ -54,7 +54,7 @@ IsStaleState(Payload::State payload_state)
       (payload_state == Payload::State::EXECUTING) ||
       (payload_state == Payload::State::RELEASED));
 }
-
+// constructor
 DynamicBatchScheduler::DynamicBatchScheduler(
     TritonModel* model, TritonModelInstance* model_instance,
     const bool dynamic_batching_enabled, const int32_t max_batch_size,
@@ -103,6 +103,7 @@ DynamicBatchScheduler::DynamicBatchScheduler(
   }
 }
 
+// create function 2
 Status
 DynamicBatchScheduler::Create(
     TritonModel* model, TritonModelInstance* model_instance, const int nice,
@@ -120,12 +121,13 @@ DynamicBatchScheduler::Create(
   }
   batcher_config.set_max_queue_delay_microseconds(max_queue_delay_microseconds);
 
-  return Create(
+  return Create( // call Create function 1
       model, model_instance, nice, dynamic_batching_enabled, max_batch_size,
       enforce_equal_shape_tensors, batcher_config, response_cache_enable,
       scheduler);
 }
 
+// Create function 1
 Status
 DynamicBatchScheduler::Create(
     TritonModel* model, TritonModelInstance* model_instance, const int nice,
@@ -208,7 +210,7 @@ DynamicBatchScheduler::Enqueue(std::unique_ptr<InferenceRequest>& request)
     CacheLookUp(request, cached_response);
   }
 
-  if (cached_response != nullptr) {
+  if (cached_response != nullptr) { // if there's a cached results, return immediately with the cached results
     // If there was a cache hit then try sending the cached response
     // and release the request.
     if (preserve_ordering_) {
@@ -226,7 +228,7 @@ DynamicBatchScheduler::Enqueue(std::unique_ptr<InferenceRequest>& request)
     return Status::Success;
   }
 
-  if (!dynamic_batching_enabled_) {
+  if (!dynamic_batching_enabled_) { // if dynamic batcher is not enabled, then directly add the request to a new payload and send payload to ratelimiter
     if (preserve_ordering_ || response_cache_enabled_) {
       DelegateResponse(request);
     }
@@ -238,7 +240,7 @@ DynamicBatchScheduler::Enqueue(std::unique_ptr<InferenceRequest>& request)
     RETURN_IF_ERROR(
         model_->Server()->GetRateLimiter()->EnqueuePayload(model_, payload));
 
-  } else {
+  } else { // dynamic batcher enabled, add request to queue and wake up batcher to do the rest
     bool wake_batcher = true;
     {
       std::lock_guard<std::mutex> lock(mu_);
@@ -352,7 +354,7 @@ DynamicBatchScheduler::BatcherThread(const int nice)
         if (payload_saturated_) {
           continue;
         }
-        cv_.wait(lock, wait_for_slots);
+        cv_.wait(lock, wait_for_slots); // wait till lock is notified or wait_for_slots is satisfied
         {
           std::lock_guard<std::mutex> exec_lock(
               *(curr_payload_->GetExecMutex()));
@@ -414,7 +416,7 @@ DynamicBatchScheduler::BatcherThread(const int nice)
 
     if (curr_payload_->GetState() == Payload::State::READY) {
       auto callback = [this]() { cv_.notify_one(); };
-      curr_payload_->SetCallback(callback);
+      curr_payload_->SetCallback(callback); // why curr_payload_ need a callback, what is the callback used for?
       {
         std::lock_guard<std::mutex> exec_lock(*(curr_payload_->GetExecMutex()));
         CustomBatchFini();
@@ -760,7 +762,7 @@ DynamicBatchScheduler::FinalizeResponses()
       if (response_complete) {
         completion_queue_.pop_front();
       } else {
-        completion_queue_.front().clear();
+        completion_queue_.front().clear(); // why the different handling
       }
     }
   }

@@ -72,11 +72,11 @@ RequiredEqualInputs::HasEqualInputs(
       (request->ImmutableInputs().size() != required_inputs_.size())) {
     return false;
   }
-  for (const auto& pr : request->ImmutableInputs()) {
-    const InferenceRequest::Input* input = pr.second;
+  for (const auto& pr : request->ImmutableInputs()) { // iterate through inputs
+    const InferenceRequest::Input* input = pr.second; 
     const auto itr = required_inputs_.find(input->Name());
     if (itr != required_inputs_.end()) {
-      if (itr->second.first != nullptr) {
+      if (itr->second.first != nullptr) { // name is not null
         // Make sure shape of input tensors is equal.
         if (!triton::common::CompareDims(
                 itr->second.first->Shape(), input->Shape())) {
